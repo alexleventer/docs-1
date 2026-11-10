@@ -347,8 +347,10 @@ Fly.io runs your agent's Docker image on fast-booting VMs (Fly Machines) in the 
 
   <Step title="Deploy and access your app">
     ```bash Terminal
-    fly deploy
+    fly deploy --ha=false
     ```
+
+    `--ha=false` keeps your agent on a single Machine. Without it, Fly starts a second copy for high availability, and two copies of the same agent would both answer on Discord, Telegram, or X.
 
     Once the deploy finishes, your agent is live at `https://<your-app-name>.fly.dev`. Run `fly deploy` again whenever you change your code.
 
