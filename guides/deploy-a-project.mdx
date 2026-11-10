@@ -280,7 +280,7 @@ Render is comparable to Railway, but its Free/Hobby plan is less generous and sl
 
 [Fly.io website](https://fly.io) | [Fly.io docs](https://fly.io/docs)
 
-Fly.io runs your agent's Docker image on fast-booting VMs (Fly Machines) in the region you choose. Every elizaOS project already includes a Dockerfile, so you deploy straight from your terminal. No GitHub repo needed.
+Fly.io runs your agent's Docker image on a VM in the region you pick. Every elizaOS project already includes a Dockerfile. You deploy from your terminal, so you don't need a GitHub repo.
 
 <Steps>
   <Step title="Create your project">
@@ -312,7 +312,7 @@ Fly.io runs your agent's Docker image on fast-booting VMs (Fly Machines) in the 
   </Step>
 
   <Step title="Keep your agent always on">
-    By default, Fly stops idle Machines and starts them on the next HTTP request. Agents that listen on Discord, Telegram, or X need to stay running, so update the `[http_service]` section in `fly.toml`:
+    By default, Fly stops idle machines and starts them on the next HTTP request. Agents that listen on Discord, Telegram, or X need to stay running, so update the `[http_service]` section in `fly.toml`:
 
     ```toml fly.toml
     [http_service]
@@ -341,7 +341,7 @@ Fly.io runs your agent's Docker image on fast-booting VMs (Fly Machines) in the 
     </Warning>
 
     <Note>
-    **Use Postgres for production.** A Machine's filesystem resets on every deploy, so the default local database won't keep your agent's memory. Use [Fly Managed Postgres](https://fly.io/docs/mpg/) or any hosted Postgres and set `POSTGRES_URL`.
+    **Use Postgres for production.** A machine's filesystem resets on every deploy, so the default local database won't keep your agent's memory. Use [Fly Managed Postgres](https://fly.io/docs/mpg/) or any hosted Postgres and set `POSTGRES_URL`.
     </Note>
   </Step>
 
@@ -350,7 +350,7 @@ Fly.io runs your agent's Docker image on fast-booting VMs (Fly Machines) in the 
     fly deploy --ha=false
     ```
 
-    `--ha=false` keeps your agent on a single Machine. Without it, Fly starts a second copy for high availability, and two copies of the same agent would both answer on Discord, Telegram, or X.
+    `--ha=false` keeps your agent on a single machine. Without it, Fly starts a second copy for high availability, and two copies of the same agent would both answer on Discord, Telegram, or X.
 
     Once the deploy finishes, your agent is live at `https://<your-app-name>.fly.dev`. Run `fly deploy` again whenever you change your code.
 
