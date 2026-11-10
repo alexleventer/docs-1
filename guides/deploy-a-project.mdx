@@ -276,6 +276,88 @@ Render is comparable to Railway, but its Free/Hobby plan is less generous and sl
   </Step>
 </Steps>
 
+### Fly.io
+
+[Fly.io website](https://fly.io) | [Fly.io docs](https://fly.io/docs)
+
+Fly.io runs your agent's Docker image on fast-booting VMs (Fly Machines) in the region you choose. Every elizaOS project already includes a Dockerfile, so you deploy straight from your terminal. No GitHub repo needed.
+
+<Steps>
+  <Step title="Create your project">
+    ```bash Terminal
+    elizaos create my-agent --type project
+    cd my-agent
+    ```
+  </Step>
+
+  <Step title="Install flyctl and sign up">
+    ```bash Terminal
+    # macOS
+    brew install flyctl
+
+    # Linux / WSL
+    curl -L https://fly.io/install.sh | sh
+
+    # Create an account (or `fly auth login` if you have one)
+    fly auth signup
+    ```
+  </Step>
+
+  <Step title="Create the Fly app">
+    ```bash Terminal
+    fly launch --no-deploy --vm-memory 2048
+    ```
+
+    `fly launch` detects your Dockerfile and writes a `fly.toml`. Accept the defaults, or pick a region close to your users and the APIs your agent calls.
+  </Step>
+
+  <Step title="Keep your agent always on">
+    By default, Fly stops idle Machines and starts them on the next HTTP request. Agents that listen on Discord, Telegram, or X need to stay running, so update the `[http_service]` section in `fly.toml`:
+
+    ```toml fly.toml
+    [http_service]
+      internal_port = 3000
+      force_https = true
+      auto_stop_machines = "off"  # [!code ++]
+      auto_start_machines = true
+      min_machines_running = 1  # [!code ++]
+    ```
+  </Step>
+
+  <Step title="Add environment variables">
+    Set the keys your agent needs as encrypted secrets:
+
+    ```bash Terminal
+    fly secrets set \
+      OPENAI_API_KEY=your_openai_key \
+      DISCORD_APPLICATION_ID=your_app_id \
+      DISCORD_API_TOKEN=your_bot_token
+    ```
+
+    Add `ELIZA_UI_ENABLE=true` if your project has a web UI, and `POSTGRES_URL` if you're using Postgres.
+
+    <Warning>
+    Don't pipe your whole `.env` into `fly secrets import`. The generated `.env` contains divider lines flyctl can't parse, and `PGLITE_DATA_DIR` points to a path on your local machine.
+    </Warning>
+
+    <Note>
+    **Use Postgres for production.** A Machine's filesystem resets on every deploy, so the default local database won't keep your agent's memory. Use [Fly Managed Postgres](https://fly.io/docs/mpg/) or any hosted Postgres and set `POSTGRES_URL`.
+    </Note>
+  </Step>
+
+  <Step title="Deploy and access your app">
+    ```bash Terminal
+    fly deploy
+    ```
+
+    Once the deploy finishes, your agent is live at `https://<your-app-name>.fly.dev`. Run `fly deploy` again whenever you change your code.
+
+    <Tip>
+    The agent takes a few seconds to boot, so `fly deploy` may warn that the app isn't listening on `0.0.0.0:3000` yet. Run `fly logs` and wait for `AgentServer is listening on port 3000`, or check `https://<your-app-name>.fly.dev/healthz`.
+    </Tip>
+  </Step>
+</Steps>
+
 ---
 
 ## Option 2: Self-Hosted
